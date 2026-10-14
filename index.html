@@ -11,6 +11,25 @@
 @media(max-width:1250px){.sidebar{width:210px}.main{margin-left:210px;padding:23px 20px}.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-bottom{flex-wrap:wrap}.filter-actions{margin-left:0}.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lower-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lower-grid .panel:last-child{grid-column:span 2}}
 @media(max-width:760px){.sidebar{width:270px;transform:translateX(-102%);transition:transform .22s;box-shadow:none}.sidebar.open{transform:translateX(0);box-shadow:12px 0 35px #102b191c}.mobile-overlay.show{display:block;position:fixed;inset:0;background:#10201866;z-index:15}.main{margin:0;padding:14px 13px 25px}.mobile-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.mobile-header .brand{padding:0;font-size:20px}.menu-btn{width:40px;height:40px;border:1px solid var(--line);background:#fff;border-radius:10px;color:var(--green);display:grid;place-items:center}.menu-btn svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2}.topline{align-items:flex-start;margin-bottom:17px}.heading h1{font-size:23px}.heading p{font-size:12px}.top-actions{display:none}.filter-panel{padding:14px;margin-bottom:13px}.filter-grid{grid-template-columns:1fr 1fr;gap:11px}.field label,.field-label{font-size:11px}.field select,.field input{height:40px;padding:0 8px;font-size:12px}.filter-bottom{display:grid;grid-template-columns:1fr;gap:12px;margin-top:13px}.granularity{min-width:0}.segmented{max-width:none}.compare{white-space:normal}.filter-actions{display:grid;grid-template-columns:1fr 1fr}.btn{padding:0 10px;font-size:12px}.kpi-grid{gap:10px;margin-bottom:13px}.kpi{padding:13px;min-height:121px;border-radius:13px}.kpi-icon{width:34px;height:34px}.kpi-label{font-size:11px}.kpi-value{font-size:24px;margin-top:12px}.kpi-foot{font-size:10px}.chart-grid,.lower-grid{grid-template-columns:1fr;gap:12px;margin-bottom:12px}.lower-grid .panel:last-child{grid-column:auto}.panel{padding:14px;border-radius:13px}.panel-head h2{font-size:15px}.empty-chart{height:185px}.data-table{min-width:360px}.footer{flex-direction:column;padding-top:18px}.active-filters{margin-top:10px}.brand-note{margin-top:20px}}
 @media(max-width:360px){.filter-grid{grid-template-columns:1fr}.kpi{padding:11px}.kpi-value{font-size:22px}.heading h1{font-size:21px}}
+
+.country-bars{display:flex;align-items:flex-end;gap:8px;height:220px;padding:18px 5px 2px;border-bottom:1px solid var(--line);overflow-x:auto}
+.country-bar-wrap{min-width:30px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:7px}
+.country-bar{width:min(28px,80%);min-height:2px;border-radius:5px 5px 0 0;background:linear-gradient(180deg,#32b76f,#11964f)}
+.country-bar-wrap strong{font-size:10px;color:#67766c;font-weight:600;white-space:nowrap}
+.country-bar-wrap span{font-size:10px;color:#87948b;white-space:nowrap;writing-mode:vertical-rl;transform:rotate(180deg);height:40px}
+.country-ranking{display:grid;gap:10px;max-height:260px;overflow:auto}
+.country-rank-row{display:grid;grid-template-columns:25px minmax(0,1fr) auto;align-items:center;gap:8px;font-size:12px}
+.country-rank-num{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:var(--green-soft);color:var(--green-dark);font-weight:700;font-size:10px}
+.country-rank-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#33443a}
+.country-rank-value{font-weight:700;color:#26362c;font-variant-numeric:tabular-nums}
+#countries .panel-head{margin-bottom:14px}
+#countryTable tbody tr{cursor:pointer}
+#countryTable tbody tr:hover{background:#f6fbf7}
+#countryTable tbody tr.selected{background:#eaf7ee}
+#countryTable td:first-child{color:#2d4034;font-weight:600}
+#countryTable td:last-child,#countryTable th:last-child{text-align:left}
+.kpi-value.loaded{color:var(--green)}
+@media(max-width:760px){#countries .kpi-grid{grid-template-columns:1fr!important}.country-bars{height:190px}.country-bar-wrap{min-width:26px}.country-bar{width:20px}}
 </style>
 </head>
 <body>
@@ -26,11 +45,13 @@
     <a href="#acquisition" data-page="Acquisition Analytics"><svg viewBox="0 0 24 24"><path d="M4 19V9h4v10M10 19V4h4v15M16 19v-7h4v7M2 21h20"/></svg>Acquisition Analytics</a>
     <a href="#devices" data-page="Device Analytics"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg>Device Analytics</a>
     <a href="#comparison" data-page="Period Comparison"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 9h18M8 13h3M8 17h6"/></svg>Period Comparison</a>
-    <a href="#data" data-page="Data Management"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg>Data Management</a>
+    
+    <a href="#countries" data-page="Country Analytics"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>Country Analytics</a>
+<a href="#data" data-page="Data Management"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg>Data Management</a>
     <a href="#export" data-page="Export Reports"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>Export Reports</a>
   </nav>
   <div class="side-bottom">
-    <div class="brand-note"><strong>App · YourPass JO</strong><p>Jordan · Analytics workspace</p><p style="margin-top:9px">UI preview · No data connected</p></div>
+    <div class="brand-note"><strong>App · YourPass JO</strong><p>Jordan · Analytics workspace</p><p style="margin-top:9px">iOS data loaded · Android pending</p></div>
   </div>
 </aside>
 <main class="main">
@@ -40,15 +61,15 @@
   </div>
   <header class="topline">
     <div class="heading"><h1 id="pageTitle">YourPass <span>Analytics</span></h1><p>App Performance &amp; Device Insights · Jordan</p></div>
-    <div class="top-actions"><div class="status-pill"><span class="dot"></span> UI preview · No data connected</div></div>
+    <div class="top-actions"><div class="status-pill"><span class="dot"></span> iOS data loaded · Android pending</div></div>
   </header>
 
   <section class="filter-panel" aria-label="Analytics filters">
     <div class="filter-grid">
-      <div class="field"><label for="platform">Platform</label><select id="platform"><option>All Platforms</option><option>Android</option><option>iOS</option></select></div>
+      <div class="field"><label for="platform">Platform</label><select id="platform"><option>All Platforms</option><option>Android</option><option selected>iOS</option></select></div>
       <div class="field"><label for="period">Reporting Period</label><select id="period"><option>Custom Range</option><option>Current Month</option><option>Last 3 Months</option><option>From Beginning</option></select></div>
-      <div class="field"><label for="dateFrom">Date Range</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><input id="dateFrom" type="date" aria-label="Start date" value="2026-01-01"><input id="dateTo" type="date" aria-label="End date" value="2026-10-14"></div></div>
-      <div class="field"><label for="years">Years (Multi-select)</label><select id="years" multiple size="1" aria-label="Select years" style="height:42px"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select><small style="display:block;color:#89958d;font-size:10px;margin-top:4px">Use Ctrl / ⌘ to select multiple years</small></div>
+      <div class="field"><label for="dateFrom">Date Range</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><input id="dateFrom" type="date" aria-label="Start date" value="2025-08-13"><input id="dateTo" type="date" aria-label="End date" value="2026-10-12"></div></div>
+      <div class="field"><label for="years">Years (Multi-select)</label><select id="years" multiple size="1" aria-label="Select years" style="height:42px"><option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select><small style="display:block;color:#89958d;font-size:10px;margin-top:4px">Use Ctrl / ⌘ to select multiple years</small></div>
     </div>
     <div class="filter-bottom">
       <div class="granularity"><span class="field-label">Granularity</span><div class="segmented" role="group" aria-label="Chart granularity"><button type="button" data-granularity="Daily">Daily</button><button type="button" class="active" data-granularity="Monthly">Monthly</button><button type="button" data-granularity="Yearly">Yearly</button></div></div>
@@ -59,51 +80,203 @@
   </section>
 
   <section class="kpi-grid" aria-label="Key performance indicators">
-    <article class="kpi"><div class="kpi-top"><div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg></div><div class="kpi-label">Total Downloads</div></div><div class="kpi-value placeholder">—</div><div class="kpi-foot">Android + iOS · awaiting data</div></article>
-    <article class="kpi"><div class="kpi-top"><div class="kpi-icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg></div><div class="kpi-label">Android Downloads</div></div><div class="kpi-value placeholder">—</div><div class="kpi-foot">Google Play Console</div></article>
-    <article class="kpi"><div class="kpi-top"><div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M16.5 13.5c-.1 2.1 1.8 2.8 1.9 2.9-1.2 1.8-2.6 3.6-4.5 3.6-1.1 0-1.8-.7-3-.7s-2 .7-3.1.7c-1.9 0-3.3-1.8-4.5-3.7-2.6-4-2.9-8.8-.7-10.8a4.7 4.7 0 0 1 3.3-1.3c1.2 0 2.3.8 3.1.8s2.2-.9 3.7-.8c.6 0 2.5.2 3.7 2-3.2 1.8-2.7 6.5.1 7.3Z"/><path d="M13.4 3.8A4.5 4.5 0 0 1 16.8 2a4.6 4.6 0 0 1-1.1 3.4 3.8 3.8 0 0 1-3.3 1.5 4.2 4.2 0 0 1 1-3.1Z"/></svg></div><div class="kpi-label">iOS Downloads</div></div><div class="kpi-value placeholder">—</div><div class="kpi-foot">App Store Connect</div></article>
-    <article class="kpi"><div class="kpi-top"><div class="kpi-icon" style="background:#fff0f0;color:#d45a5a"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"/></svg></div><div class="kpi-label">Total Uninstalls</div></div><div class="kpi-value placeholder">—</div><div class="kpi-foot">Based on compatible source metrics</div></article>
+    <article class="kpi"><div class="kpi-top"><div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg></div><div class="kpi-label">Total Downloads</div></div><div class="kpi-value placeholder" id="kpiTotal">—</div><div class="kpi-foot" id="kpiTotalFoot">iOS available · Android pending</div></article>
+    <article class="kpi"><div class="kpi-top"><div class="kpi-icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg></div><div class="kpi-label">Android Downloads</div></div><div class="kpi-value placeholder" id="kpiAndroid">Pending</div><div class="kpi-foot">Google Play Console · not loaded</div></article>
+    <article class="kpi"><div class="kpi-top"><div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M16.5 13.5c-.1 2.1 1.8 2.8 1.9 2.9-1.2 1.8-2.6 3.6-4.5 3.6-1.1 0-1.8-.7-3-.7s-2 .7-3.1.7c-1.9 0-3.3-1.8-4.5-3.7-2.6-4-2.9-8.8-.7-10.8a4.7 4.7 0 0 1 3.3-1.3c1.2 0 2.3.8 3.1.8s2.2-.9 3.7-.8c.6 0 2.5.2 3.7 2-3.2 1.8-2.7 6.5.1 7.3Z"/><path d="M13.4 3.8A4.5 4.5 0 0 1 16.8 2a4.6 4.6 0 0 1-1.1 3.4 3.8 3.8 0 0 1-3.3 1.5 4.2 4.2 0 0 1 1-3.1Z"/></svg></div><div class="kpi-label">iOS Downloads</div></div><div class="kpi-value placeholder" id="kpiIOS">—</div><div class="kpi-foot">App Store Connect · Total Downloads</div></article>
+    <article class="kpi"><div class="kpi-top"><div class="kpi-icon" style="background:#fff0f0;color:#d45a5a"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"/></svg></div><div class="kpi-label">First-Time Downloads</div></div><div class="kpi-value placeholder" id="kpiFirstTime">—</div><div class="kpi-foot">iOS · App Store Connect</div></article>
   </section>
 
   <section class="chart-grid">
-    <article class="panel"><div class="panel-head"><div><h2>Downloads Trend</h2><p>Trend across the selected reporting period</p></div><select class="subtle-select" id="chartGranularity" aria-label="Chart granularity"><option>Monthly</option><option>Daily</option><option>Yearly</option></select></div><div class="empty-chart"><svg viewBox="0 0 40 40"><path d="M4 34V5M4 34h32M8 27l7-8 7 4 7-12 7 5"/><circle cx="29" cy="11" r="2"/></svg><strong>No chart data available</strong><span>Upload and validate reports to display the downloads trend.</span></div><div class="legend"><span><i></i>Android</span><span><i class="ios"></i>iOS</span></div></article>
-    <article class="panel"><div class="panel-head"><div><h2>Downloads by Platform</h2><p>Platform distribution</p></div></div><div class="empty-chart" style="height:220px"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14"/><path d="M20 6v14l12 7"/></svg><strong>Waiting for platform data</strong><span>Distribution will appear when source reports are added.</span></div><div class="legend"><span><i></i>Android</span><span><i class="ios"></i>iOS</span></div></article>
+    <article class="panel"><div class="panel-head"><div><h2>Downloads Trend</h2><p>Trend across the selected reporting period</p></div><select class="subtle-select" id="chartGranularity" aria-label="Chart granularity"><option>Monthly</option><option>Daily</option><option>Yearly</option></select></div><div class="empty-chart" style="display:block;height:auto;border:0;background:transparent;padding:0"><canvas id="downloadsChart" height="220" style="width:100%;height:220px;display:block"></canvas></div><div class="legend"><span><i></i>Android</span><span><i class="ios"></i>iOS</span></div></article>
+    <article class="panel"><div class="panel-head"><div><h2>Downloads by Platform</h2><p>Platform distribution</p></div></div><div id="platformDistribution" class="empty-chart" style="height:220px"><strong>iOS 100% of currently loaded data</strong><span>Android data has not been imported yet.</span></div><div class="legend"><span><i></i>Android</span><span><i class="ios"></i>iOS</span></div></article>
   </section>
 
   <section class="lower-grid">
-    <article class="panel"><div class="panel-head"><div><h2>Monthly Breakdown</h2><p>Platform metrics by period</p></div><select class="subtle-select" aria-label="Breakdown metric"><option>Downloads</option><option>Uninstalls</option><option>Device Installs</option><option>Device Upgrades</option></select></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Period</th><th>Android</th><th>iOS</th><th>Total</th></tr></thead><tbody><tr><td class="table-empty" colspan="4">No data available yet</td></tr></tbody></table></div></article>
+    <article class="panel"><div class="panel-head"><div><h2>Monthly Breakdown</h2><p>Platform metrics by period</p></div><select class="subtle-select" aria-label="Breakdown metric"><option>Downloads</option><option>Uninstalls</option><option>Device Installs</option><option>Device Upgrades</option></select></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Period</th><th>Android</th><th>iOS</th><th>Total</th></tr></thead><tbody><tr><td class="table-empty" colspan="4" id="monthlyEmpty">Loading iOS data…</td></tr></tbody></table></div></article>
     <article class="panel"><div class="panel-head"><div><h2>Key Metrics</h2><p>Available metric groups</p></div></div><div class="metric-list">
       <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg></div><div class="metric-info"><strong>Device Installs</strong><span>Android · Google Play Console</span></div><div class="metric-value">—</div></div>
       <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14"/></svg></div><div class="metric-info"><strong>Device Uninstalls</strong><span>Android · Google Play Console</span></div><div class="metric-value">—</div></div>
       <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 18h6"/></svg></div><div class="metric-info"><strong>Active Device Installs</strong><span>Android · Google Play Console</span></div><div class="metric-value">—</div></div>
-      <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg></div><div class="metric-info"><strong>Downloads</strong><span>iOS · App Store Connect</span></div><div class="metric-value">—</div></div>
+      <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg></div><div class="metric-info"><strong>Total Downloads</strong><span>iOS · App Store Connect</span></div><div class="metric-value" id="metricIOS">—</div></div>
     </div></article>
-    <article class="panel"><div class="panel-head"><div><h2>Top Periods</h2><p>Ranked after data is connected</p></div><select class="subtle-select" aria-label="Ranking metric"><option>Downloads</option><option>Uninstalls</option></select></div><div class="empty-ranking">No periods to rank yet.<br>Validated data will appear here.</div></article>
+    <article class="panel"><div class="panel-head"><div><h2>Top Periods</h2><p>Ranked after data is connected</p></div><select class="subtle-select" aria-label="Ranking metric"><option>Downloads</option><option>Uninstalls</option></select></div><div class="empty-ranking" id="topPeriods">Loading validated data…</div></article>
   </section>
-  <footer class="footer"><span>YourPass JO Analytics · UI preview</span><span>No live data, database, or API connected</span></footer>
+
+  <section class="panel" id="countries" style="margin-top:17px">
+    <div class="panel-head">
+      <div><h2>Country Analytics</h2><p>iOS downloads by App Store Connect territory · 13 Aug 2025 – 12 Oct 2026</p></div>
+      <select class="subtle-select" id="countrySelect" aria-label="Select country"></select>
+    </div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:12px 0">
+      <article class="kpi" style="min-height:95px"><div class="kpi-label">Selected Country Downloads</div><div class="kpi-value" id="countryTotal" style="font-size:25px;color:var(--green)">—</div></article>
+      <article class="kpi" style="min-height:95px"><div class="kpi-label">Share of iOS Downloads</div><div class="kpi-value" id="countryShare" style="font-size:25px;color:var(--green)">—</div></article>
+      <article class="kpi" style="min-height:95px"><div class="kpi-label">Top Month</div><div class="kpi-value" id="countryPeak" style="font-size:20px;color:var(--green)">—</div></article>
+    </div>
+    <div class="chart-grid">
+      <article class="panel"><div class="panel-head"><div><h2 id="countryChartTitle">Monthly Downloads</h2><p>Selected territory · monthly totals</p></div></div><div id="countryChart" class="country-bars"></div></article>
+      <article class="panel"><div class="panel-head"><div><h2>Top Countries</h2><p>Ranked by total iOS downloads</p></div></div><div id="countryRanking" class="country-ranking"></div></article>
+    </div>
+    <div class="panel" style="padding:0;overflow:hidden">
+      <div class="panel-head" style="padding:16px 16px 0"><div><h2>Monthly Country Breakdown</h2><p>Only territories with at least one download are included in this table.</p></div></div>
+      <div class="table-wrap"><table class="data-table" id="countryTable"><thead><tr><th>Country / Territory</th><th>Total Downloads</th><th>Share</th><th>Top Month</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <footer class="footer"><span>YourPass JO Analytics · Static data preview</span><span>iOS source: App Store Connect · Android data pending</span></footer>
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 <script>
-(function(){
+(async function(){
  const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+ const fmt=n=>Number(n||0).toLocaleString('en-US');
+ const fmtMonth=m=>new Date(m+'-01T00:00:00').toLocaleDateString('en-US',{month:'short',year:'2-digit'});
  const sidebar=$('#sidebar'),overlay=$('#overlay'),toast=$('#toast');
- let granularity='Monthly',compare=true,toastTimer;
- function notify(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2600)}
+ let granularity='Monthly',compare=true, dailyData=null, territoryData=null;
+ function notify(msg){toast.textContent=msg;toast.classList.add('show');window.setTimeout(()=>toast.classList.remove('show'),2600)}
  function closeMenu(){sidebar.classList.remove('open');overlay.classList.remove('show')}
  $('#menuBtn').addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('show')});
  overlay.addEventListener('click',closeMenu);
- $$('.nav a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();$$('.nav a').forEach(n=>n.classList.remove('active'));a.classList.add('active');const page=a.dataset.page;$('#pageTitle').innerHTML='YourPass <span>'+page+'</span>';closeMenu();if(page==='Export Reports')notify('Export will be available after data is connected.');else if(page==='Data Management')notify('Data management UI is ready for the next phase.');else notify(page+' view selected. UI preview only.');}));
- $$('.segmented button').forEach(b=>b.addEventListener('click',()=>{$$('.segmented button').forEach(n=>n.classList.remove('active'));b.classList.add('active');granularity=b.dataset.granularity;$('#chartGranularity').value=granularity}));
- $('#chartGranularity').addEventListener('change',e=>{$$('.segmented button').forEach(n=>n.classList.toggle('active',n.dataset.granularity===e.target.value));granularity=e.target.value});
- $('#compareSwitch').addEventListener('click',()=>{compare=!compare;$('#compareSwitch').classList.toggle('on',compare);$('#compareSwitch').setAttribute('aria-checked',String(compare))});
- $('#period').addEventListener('change',e=>{const now=new Date();const fmt=d=>d.toISOString().slice(0,10);if(e.target.value==='Current Month'){const d=new Date(now.getFullYear(),now.getMonth(),1);$('#dateFrom').value=fmt(d);$('#dateTo').value=fmt(now)}else if(e.target.value==='Last 3 Months'){const d=new Date(now.getFullYear(),now.getMonth()-2,1);$('#dateFrom').value=fmt(d);$('#dateTo').value=fmt(now)}else if(e.target.value==='From Beginning'){ $('#dateFrom').value='';$('#dateTo').value=fmt(now)}});
+ $$('.nav a').forEach(a=>a.addEventListener('click',e=>{
+   e.preventDefault();$$('.nav a').forEach(n=>n.classList.remove('active'));a.classList.add('active');
+   const page=a.dataset.page;$('#pageTitle').innerHTML='YourPass <span>'+page+'</span>';closeMenu();
+   if(page==='Export Reports'){notify('Export will be available in a later phase.');}
+   else if(page==='Data Management'){notify('Static source files are stored in the repository.');}
+   else if(page==='Country Analytics'){document.querySelector('#countries').scrollIntoView({behavior:'smooth',block:'start'});}
+   else if(page==='Overview'){window.scrollTo({top:0,behavior:'smooth'});}
+   else {notify(page+' uses currently loaded static data where supported.');}
+ }));
+ $$('.segmented button').forEach(b=>b.addEventListener('click',()=>{$$('.segmented button').forEach(n=>n.classList.remove('active'));b.classList.add('active');granularity=b.dataset.granularity;$('#chartGranularity').value=granularity;renderAll()}));
+ $('#chartGranularity').addEventListener('change',e=>{$$('.segmented button').forEach(n=>n.classList.toggle('active',n.dataset.granularity===e.target.value));granularity=e.target.value;renderAll()});
+ $('#compareSwitch').addEventListener('click',()=>{compare=!compare;$('#compareSwitch').classList.toggle('on',compare);$('#compareSwitch').setAttribute('aria-checked',String(compare));renderAll()});
+ $('#period').addEventListener('change',e=>{
+   const now=new Date(),fmtDate=d=>d.toISOString().slice(0,10);
+   if(e.target.value==='Current Month'){const d=new Date(now.getFullYear(),now.getMonth(),1);$('#dateFrom').value=fmtDate(d);$('#dateTo').value=fmtDate(now)}
+   else if(e.target.value==='Last 3 Months'){const d=new Date(now.getFullYear(),now.getMonth()-2,1);$('#dateFrom').value=fmtDate(d);$('#dateTo').value=fmtDate(now)}
+   else if(e.target.value==='From Beginning'){$('#dateFrom').value=dailyData?.startDate||'';$('#dateTo').value=dailyData?.endDate||fmtDate(now)}
+ });
  function selectedYears(){return Array.from($('#years').selectedOptions).map(o=>o.value)}
- function refreshChips(){const platform=$('#platform').value,period=$('#period').value,from=$('#dateFrom').value,to=$('#dateTo').value,years=selectedYears();const fmt=s=>s?new Date(s+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'Start';const chips=[platform,period,(from||to)?fmt(from)+' – '+fmt(to):'All dates',years.length?'Years: '+years.join(', '):'No year selected',granularity,'Compare '+(compare?'on':'off')];$('#activeFilters').innerHTML=chips.map(x=>'<span class="chip">'+x.replaceAll('&','&amp;').replaceAll('<','&lt;')+'</span>').join('')}
- $('#applyBtn').addEventListener('click',()=>{const from=$('#dateFrom').value,to=$('#dateTo').value;if(from&&to&&from>to){notify('Start date must be before end date.');return}refreshChips();notify('Filters applied to UI preview. No data is connected.')});
- $('#resetBtn').addEventListener('click',()=>{$('#platform').value='All Platforms';$('#period').value='Custom Range';$('#dateFrom').value='2026-01-01';$('#dateTo').value='2026-10-14';Array.from($('#years').options).forEach(o=>o.selected=o.value==='2026');granularity='Monthly';$$('.segmented button').forEach(b=>b.classList.toggle('active',b.dataset.granularity==='Monthly'));$('#chartGranularity').value='Monthly';compare=true;$('#compareSwitch').classList.add('on');$('#compareSwitch').setAttribute('aria-checked','true');refreshChips();notify('Filters reset to the approved defaults.')});
- $('#years').addEventListener('change',()=>{const ys=selectedYears();if(ys.length){const min=Math.min(...ys.map(Number)),max=Math.max(...ys.map(Number));let from=$('#dateFrom').value,to=$('#dateTo').value;if(from&&Number(from.slice(0,4))<min)$('#dateFrom').value=min+'-01-01';if(to&&Number(to.slice(0,4))>max)$('#dateTo').value=max+'-12-31'}});
- refreshChips();
+ function getFilteredDaily(){
+   if(!dailyData) return [];
+   const start=$('#dateFrom').value||dailyData.startDate, end=$('#dateTo').value||dailyData.endDate;
+   const platform=$('#platform').value;
+   const out=[];
+   const startD=new Date(dailyData.startDate+'T00:00:00Z');
+   for(let i=0;i<dailyData.values.total.length;i++){
+     const d=new Date(startD);d.setUTCDate(d.getUTCDate()+i);
+     const date=d.toISOString().slice(0,10);
+     if(date<start||date>end)continue;
+     const year=date.slice(0,4);
+     const years=selectedYears();
+     if(years.length&&!years.includes(year))continue;
+     out.push({date,total:dailyData.values.total[i],firstTime:dailyData.values.firstTime[i],redownloads:dailyData.values.redownloads[i]});
+   }
+   return out;
+ }
+ function aggregate(daily, gran){
+   const map=new Map();
+   daily.forEach(r=>{
+     const key=gran==='Daily'?r.date:gran==='Yearly'?r.date.slice(0,4):r.date.slice(0,7);
+     if(!map.has(key))map.set(key,{period:key,total:0,firstTime:0,redownloads:0});
+     const v=map.get(key);v.total+=r.total;v.firstTime+=r.firstTime;v.redownloads+=r.redownloads;
+   });
+   return [...map.values()].sort((a,b)=>a.period.localeCompare(b.period));
+ }
+ function drawTrend(rows){
+   const canvas=$('#downloadsChart');if(!canvas)return;
+   const rect=canvas.getBoundingClientRect(),w=Math.max(280,rect.width||650),h=220,dpr=window.devicePixelRatio||1;
+   canvas.width=w*dpr;canvas.height=h*dpr;const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+   const pad={l:38,r:8,t:14,b:48},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+   const vals=rows.map(x=>x.total),max=Math.max(1,...vals),barGap=rows.length>35?2:7,barW=Math.max(2,Math.min(28,(cw/Math.max(rows.length,1))-barGap));
+   ctx.font='10px system-ui';ctx.strokeStyle='#e8eee9';ctx.fillStyle='#7b897f';ctx.textAlign='right';
+   for(let i=0;i<=4;i++){const y=pad.t+ch*i/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(fmt(Math.round(max*(4-i)/4)),pad.l-6,y+3)}
+   rows.forEach((r,i)=>{const x=pad.l+(i+.5)*cw/rows.length-barW/2, bh=r.total/max*ch;ctx.fillStyle='#11964f';ctx.fillRect(x,pad.t+ch-bh,barW,bh);if(rows.length<=18){ctx.save();ctx.translate(x+barW/2,h-pad.b+10);ctx.rotate(-Math.PI/4);ctx.textAlign='right';ctx.fillStyle='#718078';ctx.fillText(granularity==='Daily'?r.period.slice(5):granularity==='Yearly'?r.period:fmtMonth(r.period),0,0);ctx.restore()}});
+ }
+ function drawMonthlyTable(rows){
+   const tbody=document.querySelector('.data-table tbody');
+   if(!tbody)return;
+   tbody.innerHTML=rows.slice(-24).reverse().map(r=>'<tr><td>'+r.period+'</td><td class="muted-value">Pending</td><td>'+fmt(r.total)+'</td><td>'+fmt(r.total)+'</td></tr>').join('')||'<tr><td class="table-empty" colspan="4">No data for selected period</td></tr>';
+   const headers=document.querySelector('.data-table thead');
+   if(headers)headers.innerHTML='<tr><th>Period</th><th>Android</th><th>iOS</th><th>Total available*</th></tr>';
+   tbody.querySelectorAll('.muted-value').forEach(td=>td.style.color='#a1aaa3');
+ }
+ function renderKpis(daily){
+   const total=daily.reduce((s,r)=>s+r.total,0),first=daily.reduce((s,r)=>s+r.firstTime,0);
+   $('#kpiTotal').textContent=fmt(total);$('#kpiTotal').classList.add('loaded');
+   $('#kpiIOS').textContent=fmt(total);$('#kpiIOS').classList.add('loaded');
+   $('#kpiFirstTime').textContent=fmt(first);$('#kpiFirstTime').classList.add('loaded');
+   $('#metricIOS').textContent=fmt(total);$('#metricIOS').style.color='var(--green)';
+   $('#kpiTotalFoot').textContent='iOS source only · Android pending';
+   $('#kpiAndroid').textContent='Pending';
+ }
+ function refreshChips(){
+   const platform=$('#platform').value,period=$('#period').value,from=$('#dateFrom').value,to=$('#dateTo').value,years=selectedYears();
+   const fmtDate=s=>s?new Date(s+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'All';
+   const chips=[platform,period,(from||to)?fmtDate(from)+' – '+fmtDate(to):'All dates',years.length?'Years: '+years.join(', '):'All years',granularity,'Compare '+(compare?'on':'off')];
+   $('#activeFilters').innerHTML=chips.map(x=>'<span class="chip">'+x.replaceAll('&','&amp;').replaceAll('<','&lt;')+'</span>').join('');
+ }
+ function renderAll(){
+   if(!dailyData)return;
+   const raw=getFilteredDaily(),rows=aggregate(raw,granularity);
+   renderKpis(raw);drawTrend(rows);drawMonthlyTable(aggregate(raw,'Monthly'));refreshChips();
+   const total=raw.reduce((s,r)=>s+r.total,0);
+   const subtitle=document.querySelector('.heading p');
+   if(subtitle)subtitle.textContent='App Performance & Device Insights · Jordan · iOS source data loaded';
+   const chartDesc=document.querySelector('#downloadsChart')?.parentElement;
+   if(chartDesc && !raw.length)notify('No iOS data in the selected date range.');
+   const rank=$('#topPeriods');
+   if(rank){const top=[...aggregate(raw,'Monthly')].sort((a,b)=>b.total-a.total).slice(0,5);rank.className='empty-ranking';rank.innerHTML=top.length?top.map((r,i)=>'<div style="display:flex;justify-content:space-between;width:100%;padding:7px 0;border-bottom:1px solid #eef2ef"><span>'+fmtMonth(r.period)+'</span><strong>'+fmt(r.total)+'</strong></div>').join(''):'No periods available.';}
+ }
+ function renderCountries(){
+   if(!territoryData)return;
+   const active=territoryData.countries.filter(c=>c.total>0).sort((a,b)=>b.total-a.total);
+   const select=$('#countrySelect');select.innerHTML=active.map(c=>'<option value="'+c.name.replaceAll('"','&quot;')+'">'+c.name+'</option>').join('');
+   const top=active.slice(0,10);
+   $('#countryRanking').innerHTML=top.map((c,i)=>'<div class="country-rank-row"><span class="country-rank-num">'+(i+1)+'</span><span class="country-rank-name">'+c.name+'</span><span class="country-rank-value">'+fmt(c.total)+'</span></div>').join('');
+   $('#countryTable tbody').innerHTML=active.map(c=>'<tr data-country="'+c.name.replaceAll('"','&quot;')+'"><td>'+c.name+'</td><td>'+fmt(c.total)+'</td><td>'+((c.total/3414)*100).toFixed(1)+'%</td><td>'+fmtMonth(territoryData.months[c.monthly.indexOf(Math.max(...c.monthly))])+'</td></tr>').join('');
+   function renderSelected(){
+     const country=active.find(c=>c.name===select.value)||active[0];if(!country)return;
+     $('#countryTotal').textContent=fmt(country.total);
+     $('#countryShare').textContent=((country.total/3414)*100).toFixed(1)+'%';
+     const peak=Math.max(...country.monthly), peakIndex=country.monthly.indexOf(peak);
+     $('#countryPeak').textContent=fmtMonth(territoryData.months[peakIndex])+' · '+fmt(peak);
+     $('#countryChartTitle').textContent=country.name+' · Monthly Downloads';
+     const max=Math.max(1,...country.monthly);
+     $('#countryChart').innerHTML=country.monthly.map((n,i)=>'<div class="country-bar-wrap" title="'+territoryData.months[i]+': '+fmt(n)+'"><strong>'+fmt(n)+'</strong><div class="country-bar" style="height:'+Math.max(2,n/max*125)+'px"></div><span>'+fmtMonth(territoryData.months[i])+'</span></div>').join('');
+     document.querySelectorAll('#countryTable tbody tr').forEach(tr=>tr.classList.toggle('selected',tr.dataset.country===country.name));
+   }
+   select.value='Jordan';select.addEventListener('change',renderSelected);
+   $('#countryTable tbody').addEventListener('click',e=>{const row=e.target.closest('tr[data-country]');if(row){select.value=row.dataset.country;renderSelected()}});
+   renderSelected();
+ }
+ $('#applyBtn').addEventListener('click',()=>{const from=$('#dateFrom').value,to=$('#dateTo').value;if(from&&to&&from>to){notify('Start date must be before end date.');return}renderAll();notify('Filters applied to available iOS data.')});
+ $('#resetBtn').addEventListener('click',()=>{
+   $('#platform').value='iOS';$('#period').value='From Beginning';$('#dateFrom').value=dailyData?.startDate||'2025-08-13';$('#dateTo').value=dailyData?.endDate||'2026-10-12';
+   Array.from($('#years').options).forEach(o=>o.selected=['2025','2026'].includes(o.value));granularity='Monthly';$$('.segmented button').forEach(b=>b.classList.toggle('active',b.dataset.granularity==='Monthly'));$('#chartGranularity').value='Monthly';compare=true;$('#compareSwitch').classList.add('on');$('#compareSwitch').setAttribute('aria-checked','true');renderAll();notify('Filters reset to the full iOS data period.');
+ });
+ $('#years').addEventListener('change',()=>{
+   const ys=selectedYears();if(ys.length){const min=Math.min(...ys.map(Number)),max=Math.max(...ys.map(Number));
+   let from=$('#dateFrom').value,to=$('#dateTo').value;
+   if(from&&Number(from.slice(0,4))<min)$('#dateFrom').value=min+'-01-01';
+   if(to&&Number(to.slice(0,4))>max)$('#dateTo').value=max+'-12-31';}
+ });
+ try{
+   const [d,t]=await Promise.all([fetch('data/ios_daily.json').then(r=>{if(!r.ok)throw Error('iOS daily JSON failed');return r.json()}),fetch('data/ios_territories.json').then(r=>{if(!r.ok)throw Error('territory JSON failed');return r.json()})]);
+   dailyData=d;territoryData=t;
+   if(d.values.total.length!==426||d.values.firstTime.length!==426||d.values.redownloads.length!==426)throw Error('Unexpected daily row count');
+   if(d.values.total.reduce((a,b)=>a+b,0)!==3414||d.values.firstTime.reduce((a,b)=>a+b,0)!==3081||d.values.redownloads.reduce((a,b)=>a+b,0)!==333)throw Error('iOS totals validation failed');
+   if(t.countries.reduce((a,c)=>a+c.total,0)!==3414)throw Error('Territory totals do not reconcile');
+   // Country list excludes empty territories, which App Store Connect can report with zero values.
+   $('#period').value='From Beginning';$('#dateFrom').value=d.startDate;$('#dateTo').value=d.endDate;
+   $('#years').querySelectorAll('option').forEach(o=>o.selected=['2025','2026'].includes(o.value));
+   $('#platform').value='iOS';
+   renderAll();renderCountries();
+   const pill=document.querySelector('.top-actions .status-pill');if(pill)pill.innerHTML='<span class="dot"></span> iOS data loaded · 52 active territories';
+ }catch(err){
+   console.error(err);notify('Could not load repository data. Refresh the page.');
+   const status=document.querySelector('.top-actions .status-pill');if(status)status.innerHTML='<span class="dot" style="background:#d55"></span> Data load error';
+ }
+ window.addEventListener('resize',()=>{if(dailyData)renderAll()});
 })();
 </script>
 </body>
