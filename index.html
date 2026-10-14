@@ -133,7 +133,7 @@
  const fmt=n=>Number(n||0).toLocaleString('en-US');
  const fmtMonth=m=>new Date(m+'-01T00:00:00').toLocaleDateString('en-US',{month:'short',year:'2-digit'});
  const sidebar=$('#sidebar'),overlay=$('#overlay'),toast=$('#toast');
- let granularity='Monthly',compare=true, dailyData=null, territoryData=null;
+ let granularity='Monthly',compare=true, dailyData=null, territoryData=null, androidData=null;
  function notify(msg){toast.textContent=msg;toast.classList.add('show');window.setTimeout(()=>toast.classList.remove('show'),2600)}
  function closeMenu(){sidebar.classList.remove('open');overlay.classList.remove('show')}
  $('#menuBtn').addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('show')});
@@ -158,21 +158,13 @@
  });
  function selectedYears(){return Array.from($('#years').selectedOptions).map(o=>o.value)}
  function getFilteredDaily(){
-   if(!dailyData) return [];
-   const start=$('#dateFrom').value||dailyData.startDate, end=$('#dateTo').value||dailyData.endDate;
    const platform=$('#platform').value;
-   if(platform==='Android') return [];
-   const out=[];
-   const startD=new Date(dailyData.startDate+'T00:00:00Z');
-   for(let i=0;i<dailyData.values.total.length;i++){
-     const d=new Date(startD);d.setUTCDate(d.getUTCDate()+i);
-     const date=d.toISOString().slice(0,10);
-     if(date<start||date>end)continue;
-     const year=date.slice(0,4);
-     const years=selectedYears();
-     if(years.length&&!years.includes(year))continue;
-     out.push({date,total:dailyData.values.total[i],firstTime:dailyData.values.firstTime[i],redownloads:dailyData.values.redownloads[i]});
-   }
+   const source=platform==='Android'?androidData:dailyData;
+   if(!source)return [];
+   const start=$('#dateFrom').value||source.startDate, end=$('#dateTo').value||source.endDate, years=selectedYears();
+   if(platform==='Android') return (source.monthly||[]).filter(r=>{const date=r.period+'-01',year=r.period.slice(0,4);return date>=start&&date<=end&&(!years.length||years.includes(year));}).map(r=>({date:r.period+'-01',period:r.period,total:r.deviceInstalls,firstTime:r.userInstalls,redownloads:0,deviceInstalls:r.deviceInstalls,deviceUninstalls:r.deviceUninstalls,deviceUpgrades:r.deviceUpgrades,userUninstalls:r.userUninstalls,activeDeviceInstalls:r.activeDeviceInstalls}));
+   const out=[],startD=new Date(dailyData.startDate+'T00:00:00Z');
+   for(let i=0;i<dailyData.values.total.length;i++){const d=new Date(startD);d.setUTCDate(d.getUTCDate()+i);const date=d.toISOString().slice(0,10);if(date<start||date>end)continue;const year=date.slice(0,4);if(years.length&&!years.includes(year))continue;out.push({date,total:dailyData.values.total[i],firstTime:dailyData.values.firstTime[i],redownloads:dailyData.values.redownloads[i]});}
    return out;
  }
  function aggregate(daily, gran){
@@ -186,7 +178,7 @@
  }
  function drawTrend(rows){
    const canvas=$('#downloadsChart');if(!canvas)return;
-   if($('#platform').value==='Android'){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);ctx.font='13px system-ui';ctx.fillStyle='#87948b';ctx.textAlign='center';ctx.fillText('Android data has not been loaded',Math.max(140,canvas.width/(window.devicePixelRatio||1)/2),100);return;}
+   if($('#platform').value==='Android'){$('#chartGranularity').querySelector('option[value="Daily"]').disabled=true;if(granularity==='Daily'){granularity='Monthly';$('#chartGranularity').value='Monthly';$('.segmented button').forEach(b=>b.classList.toggle('active',b.dataset.granularity==='Monthly'));}const p=canvas.parentElement;const note=$('#androidCoverageNote');if(note)note.remove();const n=document.createElement('p');n.id='androidCoverageNote';n.style.cssText='margin:8px 0;color:#8b6b22;font-size:12px';n.textContent='Android is displayed by month from Google Play Console exports. Daily granularity is not available in this summary.';p.appendChild(n);}else{$('#chartGranularity').querySelector('option[value="Daily"]').disabled=false;const note=$('#androidCoverageNote');if(note)note.remove();}
    const rect=canvas.getBoundingClientRect(),w=Math.max(280,rect.width||650),h=220,dpr=window.devicePixelRatio||1;
    canvas.width=w*dpr;canvas.height=h*dpr;const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
    const pad={l:38,r:8,t:14,b:48},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
@@ -196,23 +188,27 @@
    rows.forEach((r,i)=>{const x=pad.l+(i+.5)*cw/rows.length-barW/2, bh=r.total/max*ch;ctx.fillStyle='#11964f';ctx.fillRect(x,pad.t+ch-bh,barW,bh);if(rows.length<=18){ctx.save();ctx.translate(x+barW/2,h-pad.b+10);ctx.rotate(-Math.PI/4);ctx.textAlign='right';ctx.fillStyle='#718078';ctx.fillText(granularity==='Daily'?r.period.slice(5):granularity==='Yearly'?r.period:fmtMonth(r.period),0,0);ctx.restore()}});
  }
  function drawMonthlyTable(rows){
-   const tbody=document.querySelector('.data-table tbody');
-   if(!tbody)return;
-   tbody.innerHTML=rows.slice(-24).reverse().map(r=>'<tr><td>'+r.period+'</td><td class="muted-value">Pending</td><td>'+fmt(r.total)+'</td><td>'+fmt(r.total)+'</td></tr>').join('')||'<tr><td class="table-empty" colspan="4">No data for selected period</td></tr>';
-   const headers=document.querySelector('.data-table thead');
-   if(headers)headers.innerHTML='<tr><th>Period</th><th>Android</th><th>iOS</th><th>Total available*</th></tr>';
+   const tbody=document.querySelector('.data-table tbody');if(!tbody)return;
+   const androidOnly=$('#platform').value==='Android';
+   tbody.innerHTML=rows.slice(-24).reverse().map(r=>androidOnly?'<tr><td>'+r.period+'</td><td>'+fmt(r.total)+'</td><td class="muted-value">Not selected</td><td>'+fmt(r.total)+'</td></tr>':'<tr><td>'+r.period+'</td><td class="muted-value">Not loaded</td><td>'+fmt(r.total)+'</td><td>'+fmt(r.total)+'</td></tr>').join('')||'<tr><td class="table-empty" colspan="4">No data for selected period</td></tr>';
+   const headers=document.querySelector('.data-table thead');if(headers)headers.innerHTML='<tr><th>Period</th><th>Android Device Installs</th><th>iOS Downloads</th><th>Total available*</th></tr>';
    tbody.querySelectorAll('.muted-value').forEach(td=>td.style.color='#a1aaa3');
  }
  function renderKpis(daily){
    const androidOnly=$('#platform').value==='Android';
    const total=daily.reduce((s,r)=>s+r.total,0),first=daily.reduce((s,r)=>s+r.firstTime,0),redownloads=daily.reduce((s,r)=>s+r.redownloads,0);
-   $('#kpiTotal').textContent=androidOnly?'Pending':fmt(total);$('#kpiTotal').classList.toggle('loaded',!androidOnly);
-   $('#kpiIOS').textContent=$('#platform').value==='Android'?'Not selected':fmt(total);$('#kpiIOS').classList.toggle('loaded',$('#platform').value!=='Android');
+   $('#kpiTotal').textContent=fmt(total);$('#kpiTotal').classList.add('loaded');
+   $('#kpiAndroid').textContent=androidOnly?fmt(total):fmt(androidData?.totals?.deviceInstalls||0);$('#kpiAndroid').classList.add('loaded');
+   $('#kpiIOS').textContent=androidOnly?'Not selected':fmt(total);$('#kpiIOS').classList.toggle('loaded',!androidOnly);
    $('#kpiFirstTime').textContent=androidOnly?'Not selected':fmt(first);$('#kpiFirstTime').classList.toggle('loaded',!androidOnly);
    $('#metricIOS').textContent=androidOnly?'Not selected':fmt(total);$('#metricIOS').style.color=androidOnly?'#9aa69e':'var(--green)';
    const redown=$('#metricRedownloads');if(redown){redown.textContent=androidOnly?'Not selected':fmt(redownloads);redown.style.color=androidOnly?'#9aa69e':'var(--green)';}
-   $('#kpiTotalFoot').textContent=androidOnly?'Android file not loaded':'iOS only · Android pending';
-   $('#kpiAndroid').textContent='Pending';
+   $('#kpiTotalFoot').textContent=androidOnly?'Android · Daily Device Installs summed by month':'iOS only · App Store Connect';
+   const labels=$('.kpi-label');if(labels[0])labels[0].textContent=androidOnly?'Android Device Installs':'iOS Total Downloads';
+   const androidFoot=$('#kpiAndroid')?.parentElement?.querySelector('.kpi-foot');if(androidFoot)androidFoot.textContent='Google Play Console · Daily Device Installs';
+   const chartTitle=document.querySelector('.chart-grid .panel h2');if(chartTitle)chartTitle.textContent=androidOnly?'Android Device Installs Trend':'Downloads Trend';
+   const legend=document.querySelector('.chart-grid .panel .legend');if(legend)legend.innerHTML=androidOnly?'<span><i></i>Android Device Installs</span>':'<span><i></i>iOS (loaded)</span><span><i class="ios"></i>Android data available · select Android</span>';
+   const dist=$('#platformDistribution');if(dist)dist.innerHTML=androidOnly?'<strong>Android 335 device installs</strong><span>Google Play Console · monthly summary loaded. iOS remains separate.</span>':'<strong>iOS 100% of currently loaded data</strong><span>Android is available in the platform filter.</span>';
  }
  function refreshChips(){
    const platform=$('#platform').value,period=$('#period').value,from=$('#dateFrom').value,to=$('#dateTo').value,years=selectedYears();
@@ -254,7 +250,8 @@
    $('#countryTable tbody').addEventListener('click',e=>{const row=e.target.closest('tr[data-country]');if(row){select.value=row.dataset.country;renderSelected()}});
    renderSelected();
  }
- $('#applyBtn').addEventListener('click',()=>{const from=$('#dateFrom').value,to=$('#dateTo').value;if(from&&to&&from>to){notify('Start date must be before end date.');return}renderAll();notify('Filters applied to available iOS data.')});
+ $('#platform').addEventListener('change',()=>{const src=$('#platform').value==='Android'?androidData:dailyData;if(src){$('#dateFrom').value=src.startDate;$('#dateTo').value=src.endDate;}renderAll();});
+ $('#applyBtn').addEventListener('click',()=>{const from=$('#dateFrom').value,to=$('#dateTo').value;if(from&&to&&from>to){notify('Start date must be before end date.');return}renderAll();notify('Filters applied to available '+$('#platform').value+' data.')});
  $('#resetBtn').addEventListener('click',()=>{
    $('#platform').value='iOS';$('#period').value='From Beginning';$('#dateFrom').value=dailyData?.startDate||'2025-08-13';$('#dateTo').value=dailyData?.endDate||'2026-10-12';
    Array.from($('#years').options).forEach(o=>o.selected=['2025','2026'].includes(o.value));granularity='Monthly';$$('.segmented button').forEach(b=>b.classList.toggle('active',b.dataset.granularity==='Monthly'));$('#chartGranularity').value='Monthly';compare=true;$('#compareSwitch').classList.add('on');$('#compareSwitch').setAttribute('aria-checked','true');renderAll();notify('Filters reset to the full iOS data period.');
@@ -266,8 +263,10 @@
    if(to&&Number(to.slice(0,4))>max)$('#dateTo').value=max+'-12-31';}
  });
  try{
-   const [d,t]=await Promise.all([fetch('data/ios_daily.json').then(r=>{if(!r.ok)throw Error('iOS daily JSON failed');return r.json()}),fetch('data/ios_territories.json').then(r=>{if(!r.ok)throw Error('territory JSON failed');return r.json()})]);
-   dailyData=d;territoryData=t;
+   const [d,t,a]=await Promise.all([fetch('data/ios_daily.json').then(r=>{if(!r.ok)throw Error('iOS daily JSON failed');return r.json()}),fetch('data/ios_territories.json').then(r=>{if(!r.ok)throw Error('territory JSON failed');return r.json()}),fetch('data/android_monthly.json').then(r=>{if(!r.ok)throw Error('Android monthly JSON failed');return r.json()})]);
+   dailyData=d;territoryData=t;androidData=a;
+   if(a.totals.deviceInstalls!==335||a.monthly.reduce((s,r)=>s+r.deviceInstalls,0)!==335)throw Error('Android Device Installs validation failed');
+   if(a.monthly.reduce((s,r)=>s+r.userInstalls,0)!==320||a.totals.userUninstalls!==212)throw Error('Android metric totals validation failed');
    if(d.values.total.length!==426||d.values.firstTime.length!==426||d.values.redownloads.length!==426)throw Error('Unexpected daily row count');
    if(d.values.total.reduce((a,b)=>a+b,0)!==3414||d.values.firstTime.reduce((a,b)=>a+b,0)!==3081||d.values.redownloads.reduce((a,b)=>a+b,0)!==333)throw Error('iOS totals validation failed');
    if(t.countries.reduce((a,c)=>a+c.total,0)!==3414)throw Error('Territory totals do not reconcile');
@@ -276,7 +275,9 @@
    $('#years').querySelectorAll('option').forEach(o=>o.selected=['2025','2026'].includes(o.value));
    $('#platform').value='iOS';
    renderAll();renderCountries();
-   const pill=document.querySelector('.top-actions .status-pill');if(pill)pill.innerHTML='<span class="dot"></span> iOS data loaded · 52 active territories';
+   const pill=document.querySelector('.top-actions .status-pill');if(pill)pill.innerHTML='<span class="dot"></span> iOS + Android monthly data loaded';
+   const sideNote=document.querySelector('.brand-note p[style]');if(sideNote)sideNote.textContent='iOS + Android data loaded';
+   $('#platform').value='iOS';
  }catch(err){
    console.error(err);notify('Could not load repository data. Refresh the page.');
    const status=document.querySelector('.top-actions .status-pill');if(status)status.innerHTML='<span class="dot" style="background:#d55"></span> Data load error';
