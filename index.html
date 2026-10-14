@@ -88,7 +88,7 @@
 
   <section class="chart-grid">
     <article class="panel"><div class="panel-head"><div><h2>Downloads Trend</h2><p>Trend across the selected reporting period</p></div><select class="subtle-select" id="chartGranularity" aria-label="Chart granularity"><option>Monthly</option><option>Daily</option><option>Yearly</option></select></div><div class="empty-chart" style="display:block;height:auto;border:0;background:transparent;padding:0"><canvas id="downloadsChart" height="220" style="width:100%;height:220px;display:block"></canvas></div><div class="legend"><span><i></i>iOS (loaded)</span><span><i class="ios"></i>Android (pending)</span></div></article>
-    <article class="panel"><div class="panel-head"><div><h2>Downloads by Platform</h2><p>Platform distribution</p></div></div><div id="platformDistribution" class="empty-chart" style="height:220px"><strong>iOS 100% of currently loaded data</strong><span>Android data has not been imported yet.</span></div><div class="legend"><span><i></i>Android</span><span><i class="ios"></i>iOS</span></div></article>
+    <article class="panel"><div class="panel-head"><div><h2>Platform Data Status</h2><p>Source coverage for the current dashboard</p></div></div><div id="platformDistribution" class="empty-chart" style="height:220px"><strong>iOS 100% of currently loaded data</strong><span>Android data has not been imported yet.</span></div><div class="legend"><span><i></i>Android</span><span><i class="ios"></i>iOS</span></div></article>
   </section>
 
   <section class="lower-grid">
@@ -100,7 +100,7 @@
       <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg></div><div class="metric-info"><strong>Total Downloads</strong><span>iOS · App Store Connect</span></div><div class="metric-value" id="metricIOS">—</div></div>
       <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 9a7 7 0 0 1 12-2l2 5M4 12l2 5a7 7 0 0 0 12-2"/></svg></div><div class="metric-info"><strong>Redownloads</strong><span>iOS · App Store Connect</span></div><div class="metric-value" id="metricRedownloads">—</div></div>
     </div></article>
-    <article class="panel"><div class="panel-head"><div><h2>Top Periods</h2><p>Ranked after data is connected</p></div><select class="subtle-select" aria-label="Ranking metric"><option>Downloads</option><option>Uninstalls</option></select></div><div class="empty-ranking" id="topPeriods">Loading validated data…</div></article>
+    <article class="panel"><div class="panel-head"><div><h2>Top Months</h2><p>Ranked by iOS downloads in the selected period</p></div><select class="subtle-select" aria-label="Ranking metric"><option>Downloads</option><option>Uninstalls</option></select></div><div class="empty-ranking" id="topPeriods">Loading validated data…</div></article>
   </section>
 
   <section class="panel" id="countries" style="margin-top:17px">
