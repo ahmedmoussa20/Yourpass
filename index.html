@@ -178,7 +178,7 @@
  }
  function drawTrend(rows){
    const canvas=$('#downloadsChart');if(!canvas)return;
-   if($('#platform').value==='Android'){$('#chartGranularity').querySelector('option[value="Daily"]').disabled=true;if(granularity==='Daily'){granularity='Monthly';$('#chartGranularity').value='Monthly';$('.segmented button').forEach(b=>b.classList.toggle('active',b.dataset.granularity==='Monthly'));}const p=canvas.parentElement;const note=$('#androidCoverageNote');if(note)note.remove();const n=document.createElement('p');n.id='androidCoverageNote';n.style.cssText='margin:8px 0;color:#8b6b22;font-size:12px';n.textContent='Android is displayed by month from Google Play Console exports. Daily granularity is not available in this summary.';p.appendChild(n);}else{$('#chartGranularity').querySelector('option[value="Daily"]').disabled=false;const note=$('#androidCoverageNote');if(note)note.remove();}
+   if($('#platform').value==='Android'){$('#chartGranularity').querySelector('option[value="Daily"]').disabled=true;if(granularity==='Daily'){granularity='Monthly';$('#chartGranularity').value='Monthly';$('.segmented button').forEach(b=>b.classList.toggle('active',b.dataset.granularity==='Monthly'));}const p=canvas.parentElement;const note=$('#androidCoverageNote');if(note)note.remove();const n=document.createElement('p');n.id='androidCoverageNote';n.style.cssText='margin:8px 0;color:#8b6b22;font-size:12px';n.textContent='Android is displayed by month from Google Play Console exports. Daily granularity is not available in this summary. Source gap: 24 Sep–8 Oct 2025; September and October 2025 and the lifetime sum reflect available rows only.';p.appendChild(n);}else{$('#chartGranularity').querySelector('option[value="Daily"]').disabled=false;const note=$('#androidCoverageNote');if(note)note.remove();}
    const rect=canvas.getBoundingClientRect(),w=Math.max(280,rect.width||650),h=220,dpr=window.devicePixelRatio||1;
    canvas.width=w*dpr;canvas.height=h*dpr;const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
    const pad={l:38,r:8,t:14,b:48},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
@@ -198,7 +198,8 @@
    const androidOnly=$('#platform').value==='Android';
    const total=daily.reduce((s,r)=>s+r.total,0),first=daily.reduce((s,r)=>s+r.firstTime,0),redownloads=daily.reduce((s,r)=>s+r.redownloads,0);
    $('#kpiTotal').textContent=fmt(total);$('#kpiTotal').classList.add('loaded');
-   $('#kpiAndroid').textContent=androidOnly?fmt(total):fmt(androidData?.totals?.deviceInstalls||0);$('#kpiAndroid').classList.add('loaded');
+   const androidFilteredTotal=(androidData?.monthly||[]).filter(r=>{const date=r.period+'-01',start=$('#dateFrom').value||androidData.startDate,end=$('#dateTo').value||androidData.endDate,ys=selectedYears();return date>=start&&date<=end&&(!ys.length||ys.includes(r.period.slice(0,4)));}).reduce((s,r)=>s+r.deviceInstalls,0);
+   $('#kpiAndroid').textContent=fmt(androidFilteredTotal);$('#kpiAndroid').classList.add('loaded');
    $('#kpiIOS').textContent=androidOnly?'Not selected':fmt(total);$('#kpiIOS').classList.toggle('loaded',!androidOnly);
    $('#kpiFirstTime').textContent=androidOnly?'Not selected':fmt(first);$('#kpiFirstTime').classList.toggle('loaded',!androidOnly);
    $('#metricIOS').textContent=androidOnly?'Not selected':fmt(total);$('#metricIOS').style.color=androidOnly?'#9aa69e':'var(--green)';
