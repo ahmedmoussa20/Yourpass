@@ -87,7 +87,7 @@
   </section>
 
   <section class="chart-grid">
-    <article class="panel"><div class="panel-head"><div><h2>Downloads Trend</h2><p>Trend across the selected reporting period</p></div><select class="subtle-select" id="chartGranularity" aria-label="Chart granularity"><option>Monthly</option><option>Daily</option><option>Yearly</option></select></div><div class="empty-chart" style="display:block;height:auto;border:0;background:transparent;padding:0"><canvas id="downloadsChart" height="220" style="width:100%;height:220px;display:block"></canvas></div><div class="legend"><span><i></i>Android</span><span><i class="ios"></i>iOS</span></div></article>
+    <article class="panel"><div class="panel-head"><div><h2>Downloads Trend</h2><p>Trend across the selected reporting period</p></div><select class="subtle-select" id="chartGranularity" aria-label="Chart granularity"><option>Monthly</option><option>Daily</option><option>Yearly</option></select></div><div class="empty-chart" style="display:block;height:auto;border:0;background:transparent;padding:0"><canvas id="downloadsChart" height="220" style="width:100%;height:220px;display:block"></canvas></div><div class="legend"><span><i></i>iOS (loaded)</span><span><i class="ios"></i>Android (pending)</span></div></article>
     <article class="panel"><div class="panel-head"><div><h2>Downloads by Platform</h2><p>Platform distribution</p></div></div><div id="platformDistribution" class="empty-chart" style="height:220px"><strong>iOS 100% of currently loaded data</strong><span>Android data has not been imported yet.</span></div><div class="legend"><span><i></i>Android</span><span><i class="ios"></i>iOS</span></div></article>
   </section>
 
@@ -98,6 +98,7 @@
       <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14"/></svg></div><div class="metric-info"><strong>Device Uninstalls</strong><span>Android · Google Play Console</span></div><div class="metric-value">—</div></div>
       <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 18h6"/></svg></div><div class="metric-info"><strong>Active Device Installs</strong><span>Android · Google Play Console</span></div><div class="metric-value">—</div></div>
       <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg></div><div class="metric-info"><strong>Total Downloads</strong><span>iOS · App Store Connect</span></div><div class="metric-value" id="metricIOS">—</div></div>
+      <div class="metric-row"><div class="metric-badge"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 9a7 7 0 0 1 12-2l2 5M4 12l2 5a7 7 0 0 0 12-2"/></svg></div><div class="metric-info"><strong>Redownloads</strong><span>iOS · App Store Connect</span></div><div class="metric-value" id="metricRedownloads">—</div></div>
     </div></article>
     <article class="panel"><div class="panel-head"><div><h2>Top Periods</h2><p>Ranked after data is connected</p></div><select class="subtle-select" aria-label="Ranking metric"><option>Downloads</option><option>Uninstalls</option></select></div><div class="empty-ranking" id="topPeriods">Loading validated data…</div></article>
   </section>
@@ -117,7 +118,7 @@
       <article class="panel"><div class="panel-head"><div><h2>Top Countries</h2><p>Ranked by total iOS downloads</p></div></div><div id="countryRanking" class="country-ranking"></div></article>
     </div>
     <div class="panel" style="padding:0;overflow:hidden">
-      <div class="panel-head" style="padding:16px 16px 0"><div><h2>Monthly Country Breakdown</h2><p>Only territories with at least one download are included in this table.</p></div></div>
+      <div class="panel-head" style="padding:16px 16px 0"><div><h2>Monthly Country Breakdown</h2><p>Active territories with at least one download during the loaded period.</p></div></div>
       <div class="table-wrap"><table class="data-table" id="countryTable"><thead><tr><th>Country / Territory</th><th>Total Downloads</th><th>Share</th><th>Top Month</th></tr></thead><tbody></tbody></table></div>
     </div>
   </section>
@@ -160,6 +161,7 @@
    if(!dailyData) return [];
    const start=$('#dateFrom').value||dailyData.startDate, end=$('#dateTo').value||dailyData.endDate;
    const platform=$('#platform').value;
+   if(platform==='Android') return [];
    const out=[];
    const startD=new Date(dailyData.startDate+'T00:00:00Z');
    for(let i=0;i<dailyData.values.total.length;i++){
@@ -184,6 +186,7 @@
  }
  function drawTrend(rows){
    const canvas=$('#downloadsChart');if(!canvas)return;
+   if($('#platform').value==='Android'){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);ctx.font='13px system-ui';ctx.fillStyle='#87948b';ctx.textAlign='center';ctx.fillText('Android data has not been loaded',Math.max(140,canvas.width/(window.devicePixelRatio||1)/2),100);return;}
    const rect=canvas.getBoundingClientRect(),w=Math.max(280,rect.width||650),h=220,dpr=window.devicePixelRatio||1;
    canvas.width=w*dpr;canvas.height=h*dpr;const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
    const pad={l:38,r:8,t:14,b:48},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
@@ -201,12 +204,14 @@
    tbody.querySelectorAll('.muted-value').forEach(td=>td.style.color='#a1aaa3');
  }
  function renderKpis(daily){
-   const total=daily.reduce((s,r)=>s+r.total,0),first=daily.reduce((s,r)=>s+r.firstTime,0);
-   $('#kpiTotal').textContent=fmt(total);$('#kpiTotal').classList.add('loaded');
-   $('#kpiIOS').textContent=fmt(total);$('#kpiIOS').classList.add('loaded');
-   $('#kpiFirstTime').textContent=fmt(first);$('#kpiFirstTime').classList.add('loaded');
-   $('#metricIOS').textContent=fmt(total);$('#metricIOS').style.color='var(--green)';
-   $('#kpiTotalFoot').textContent='iOS source only · Android pending';
+   const androidOnly=$('#platform').value==='Android';
+   const total=daily.reduce((s,r)=>s+r.total,0),first=daily.reduce((s,r)=>s+r.firstTime,0),redownloads=daily.reduce((s,r)=>s+r.redownloads,0);
+   $('#kpiTotal').textContent=androidOnly?'Pending':fmt(total);$('#kpiTotal').classList.toggle('loaded',!androidOnly);
+   $('#kpiIOS').textContent=$('#platform').value==='Android'?'Not selected':fmt(total);$('#kpiIOS').classList.toggle('loaded',$('#platform').value!=='Android');
+   $('#kpiFirstTime').textContent=androidOnly?'Not selected':fmt(first);$('#kpiFirstTime').classList.toggle('loaded',!androidOnly);
+   $('#metricIOS').textContent=androidOnly?'Not selected':fmt(total);$('#metricIOS').style.color=androidOnly?'#9aa69e':'var(--green)';
+   const redown=$('#metricRedownloads');if(redown){redown.textContent=androidOnly?'Not selected':fmt(redownloads);redown.style.color=androidOnly?'#9aa69e':'var(--green)';}
+   $('#kpiTotalFoot').textContent=androidOnly?'Android file not loaded':'iOS only · Android pending';
    $('#kpiAndroid').textContent='Pending';
  }
  function refreshChips(){
@@ -223,7 +228,7 @@
    const subtitle=document.querySelector('.heading p');
    if(subtitle)subtitle.textContent='App Performance & Device Insights · Jordan · iOS source data loaded';
    const chartDesc=document.querySelector('#downloadsChart')?.parentElement;
-   if(chartDesc && !raw.length)notify('No iOS data in the selected date range.');
+   if(chartDesc && !raw.length){const ctx=$('#downloadsChart').getContext('2d');ctx.clearRect(0,0,$('#downloadsChart').width,$('#downloadsChart').height);ctx.font='13px system-ui';ctx.fillStyle='#87948b';ctx.textAlign='center';ctx.fillText($('#platform').value==='Android'?'Android data has not been loaded':'No data for the selected filters',Math.max(140,$('#downloadsChart').width/2),105);}
    const rank=$('#topPeriods');
    if(rank){const top=[...aggregate(raw,'Monthly')].sort((a,b)=>b.total-a.total).slice(0,5);rank.className='empty-ranking';rank.innerHTML=top.length?top.map((r,i)=>'<div style="display:flex;justify-content:space-between;width:100%;padding:7px 0;border-bottom:1px solid #eef2ef"><span>'+fmtMonth(r.period)+'</span><strong>'+fmt(r.total)+'</strong></div>').join(''):'No periods available.';}
  }
